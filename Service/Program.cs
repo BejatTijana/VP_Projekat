@@ -1,15 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ServiceModel;
 
 namespace Service
 {
-    internal class Program
+    class Program
     {
         static void Main(string[] args)
         {
+            ServiceHost host = new ServiceHost(typeof(WeatherService));
+            host.Open();
+            Console.WriteLine("[Server] WCF servis pokrenut. Ceka na klijente...");
+            Console.WriteLine("Pritisni Enter za gasenje.");
+            Console.ReadLine();
+            host.Close();
         }
     }
 }
