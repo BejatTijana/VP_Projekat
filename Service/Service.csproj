@@ -46,7 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="**\*.cs" />
+	  <Compile Include="**\*.cs" Exclude="obj\**\*.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
