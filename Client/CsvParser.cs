@@ -44,13 +44,13 @@ namespace Client
                 return new WeatherSample
                 {
                     Date = parts[0].Trim(),
-                    T = double.Parse(parts[1].Trim(), CultureInfo.InvariantCulture),
-                    Tpot = double.Parse(parts[2].Trim(), CultureInfo.InvariantCulture),
-                    Tdew = double.Parse(parts[3].Trim(), CultureInfo.InvariantCulture),
-                    Pressure = double.Parse(parts[4].Trim(), CultureInfo.InvariantCulture),
-                    VPmax = double.Parse(parts[5].Trim(), CultureInfo.InvariantCulture),
-                    VPact = double.Parse(parts[6].Trim(), CultureInfo.InvariantCulture),
-                    VPdef = double.Parse(parts[7].Trim(), CultureInfo.InvariantCulture),
+                    Pressure = double.Parse(parts[1].Trim(), CultureInfo.InvariantCulture),
+                    T = double.Parse(parts[2].Trim(), CultureInfo.InvariantCulture),
+                    Tpot = double.Parse(parts[3].Trim(), CultureInfo.InvariantCulture),
+                    Tdew = double.Parse(parts[4].Trim(), CultureInfo.InvariantCulture),
+                    VPmax = double.Parse(parts[6].Trim(), CultureInfo.InvariantCulture),
+                    VPact = double.Parse(parts[7].Trim(), CultureInfo.InvariantCulture),
+                    VPdef = double.Parse(parts[8].Trim(), CultureInfo.InvariantCulture),
                 };
             }
             catch
