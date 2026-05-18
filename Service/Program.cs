@@ -8,11 +8,44 @@ namespace Service
         static void Main(string[] args)
         {
             ServiceHost host = new ServiceHost(typeof(WeatherService));
-            host.Open();
-            Console.WriteLine("[Server] WCF servis pokrenut. Ceka na klijente...");
-            Console.WriteLine("Pritisni Enter za gasenje.");
-            Console.ReadLine();
-            host.Close();
+
+            try
+            {
+                host.Open();
+
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("==============================================");
+                Console.WriteLine("   Meteoroloska stanica - Servis pokrenut    ");
+                Console.WriteLine("==============================================");
+                Console.ResetColor();
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"Servis slusa na: net.tcp://localhost:4007/WeatherService");
+                Console.ResetColor();
+
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("Pritisnite Enter za gasenje servisa...");
+                Console.WriteLine("==============================================");
+                Console.ResetColor();
+
+                Console.ReadLine();
+            }
+            catch (Exception e)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Greska pri pokretanju servisa: {e.Message}");
+                Console.ResetColor();
+            }
+            finally
+            {
+                if (host.State == CommunicationState.Opened)
+                {
+                    host.Close();
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine("Servis ugasen.");
+                    Console.ResetColor();
+                }
+            }
         }
     }
 }

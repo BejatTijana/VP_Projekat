@@ -7,13 +7,14 @@ namespace Common
     {
         [OperationContract]
         [FaultContract(typeof(DataFormatFault))]
-        string StartSession(SessionMeta meta);
+        WeatherServiceResponse StartSession(SessionMeta meta);
 
         [OperationContract]
+        [FaultContract(typeof(DataFormatFault))]
         [FaultContract(typeof(ValidationFault))]
-        string PushSample(WeatherSample sample);
+        WeatherServiceResponse PushSample(WeatherSample sample);
 
         [OperationContract]
-        string EndSession();
+        WeatherServiceResponse EndSession();
     }
 }

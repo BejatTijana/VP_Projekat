@@ -4,59 +4,128 @@ using Common;
 
 namespace Service
 {
-    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
-    public class WeatherService : IWeatherService
+    class WeatherService : IWeatherService
     {
-        private SessionManager sessionManager = new SessionManager();
-        private WeatherAnalyzer analyzer = new WeatherAnalyzer();
-        private string currentStation = "";
+        private static SessionManager sessionManager = new SessionManager();
 
-        public WeatherService()
+        public WeatherServiceResponse StartSession(SessionMeta meta)
         {
-            sessionManager.OnTransferStarted += (s, e) =>
-                Console.WriteLine($"[EVENT] Prenos zapocet - Stanica: {e.SessionName}");
+            try
+            {
+                if (meta == null || string.IsNullOrEmpty(meta.SessionId))
+                {
+                    throw new FaultException<DataFormatFault>(
+                        new DataFormatFault("Meta zaglavlje je null ili prazno.",
+                        "SessionMeta"));
+                }
 
-            sessionManager.OnTransferCompleted += (s, e) =>
-                Console.WriteLine($"[EVENT] Prenos zavrsen - Stanica: {e.SessionName}");
-
-            sessionManager.OnSampleReceived += (s, e) =>
-                Console.WriteLine($"[EVENT] Primljen uzorak: T={e.Sample.T}, P={e.Sample.Pressure}");
-
-            analyzer.OnWarningRaised += (s, e) =>
-                Console.WriteLine($"[UPOZORENJE] {e.ParameterName} - {e.Direction} ocekivane vrijednosti. Vrijednost: {e.Value}");
+                return sessionManager.OpenSession(meta);
+            }
+            catch (FaultException<DataFormatFault>)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"[ERROR] {e.Message}");
+                Console.ResetColor();
+                return new WeatherServiceResponse(
+                    ResponseStatus.NACK,
+                    SessionStatus.IN_PROGRESS,
+                    $"Greska pri pokretanju sesije: {e.Message}");
+            }
         }
 
-        public string StartSession(SessionMeta meta)
+        public WeatherServiceResponse PushSample(WeatherSample sample)
         {
-            if (meta == null || string.IsNullOrEmpty(meta.StationName))
-                throw new FaultException<DataFormatFault>(new DataFormatFault("Meta zaglavlje je nevalidno."));
+            try
+            {
+                if (sample == null)
+                {
+                    throw new FaultException<DataFormatFault>(
+                        new DataFormatFault("Uzorak je null.", "WeatherSample"));
+                }
 
-            currentStation = meta.StationName;
-            sessionManager.StartSession(meta);
-            return "ACK - IN_PROGRESS";
+                ValidateSample(sample);
+
+                return sessionManager.WriteSample(sample);
+            }
+            catch (FaultException<DataFormatFault>)
+            {
+                throw;
+            }
+            catch (FaultException<ValidationFault>)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"[ERROR] {e.Message}");
+                Console.ResetColor();
+                return new WeatherServiceResponse(
+                    ResponseStatus.NACK,
+                    SessionStatus.IN_PROGRESS,
+                    $"Greska pri prijemu uzorka: {e.Message}");
+            }
         }
 
-        public string PushSample(WeatherSample sample)
+        public WeatherServiceResponse EndSession()
         {
-            if (sample == null)
-                throw new FaultException<ValidationFault>(new ValidationFault("Uzorak je null."));
+            try
+            {
+                return sessionManager.CloseSession();
+            }
+            catch (Exception e)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"[ERROR] {e.Message}");
+                Console.ResetColor();
+                return new WeatherServiceResponse(
+                    ResponseStatus.NACK,
+                    SessionStatus.COMPLETED,
+                    $"Greska pri zatvaranju sesije: {e.Message}");
+            }
+        }
 
+        private void ValidateSample(WeatherSample sample)
+        {
             if (sample.Pressure <= 0)
             {
-                sessionManager.SaveReject(sample, "Pritisak mora biti pozitivan.");
-                return "NACK - Nevalidan pritisak";
+                throw new FaultException<ValidationFault>(
+                    new ValidationFault(
+                        "Pritisak mora biti veci od 0.",
+                        "Pressure",
+                        sample.Pressure.ToString()));
             }
 
-            sessionManager.SaveSample(sample);
-            analyzer.Analyze(sample);
-            return "ACK";
-        }
+            if (sample.Temperature < -100 || sample.Temperature > 100)
+            {
+                throw new FaultException<ValidationFault>(
+                    new ValidationFault(
+                        "Temperatura mora biti izmedju -100 i 100.",
+                        "Temperature",
+                        sample.Temperature.ToString()));
+            }
 
-        public string EndSession()
-        {
-            sessionManager.EndSession(currentStation);
-            sessionManager.Dispose();
-            return "ACK - COMPLETED";
+            if (sample.VPact < 0)
+            {
+                throw new FaultException<ValidationFault>(
+                    new ValidationFault(
+                        "VPact ne moze biti negativan.",
+                        "VPact",
+                        sample.VPact.ToString()));
+            }
+
+            if (sample.VPdef < 0)
+            {
+                throw new FaultException<ValidationFault>(
+                    new ValidationFault(
+                        "VPdef ne moze biti negativan.",
+                        "VPdef",
+                        sample.VPdef.ToString()));
+            }
         }
     }
 }
