@@ -89,7 +89,7 @@ namespace Client
             int rowNumber = 0;
             int validCount = 0;
 
-            while (!reader.EndOfStream && validCount < maxRows)
+            while (!reader.EndOfStream && rowNumber < maxRows)
             {
                 rowNumber++;
                 string rawLine = reader.ReadLine();
@@ -104,7 +104,6 @@ namespace Client
                 if (sample != null)
                 {
                     samples.Add(sample);
-                    validCount++;
                 }
             }
 
