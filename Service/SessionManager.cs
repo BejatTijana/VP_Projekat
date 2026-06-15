@@ -91,7 +91,15 @@ namespace Service
                 SessionStatus.IN_PROGRESS,
                 $"Uzorak {sample.Date} uspesno primljen.");
         }
+        public void WriteReject(WeatherSample sample, string reason)
+        {
+            fileManager.AppendReject(reason,
+                $"{sample.Date},{sample.Temperature},{sample.Pressure}");
 
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"[REJECTED] {sample.Date} - {reason}");
+            Console.ResetColor();
+        }
         public WeatherServiceResponse CloseSession()
         {
             fileManager.FinalizeSession();

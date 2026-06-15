@@ -51,11 +51,12 @@ namespace Service
 
                 return sessionManager.WriteSample(sample);
             }
-            catch (FaultException<DataFormatFault>)
+            catch (FaultException<ValidationFault> ex)
             {
+                sessionManager.WriteReject(sample, ex.Detail.Message);
                 throw;
             }
-            catch (FaultException<ValidationFault>)
+            catch (FaultException<DataFormatFault>)
             {
                 throw;
             }
