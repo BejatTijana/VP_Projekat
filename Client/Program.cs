@@ -93,6 +93,7 @@ namespace Client
                             Console.ResetColor();
                             failCount++;
                         }
+                        System.Threading.Thread.Sleep(300);
                     }
                     catch (FaultException<DataFormatFault> e)
                     {
@@ -139,11 +140,11 @@ namespace Client
                 Console.WriteLine($"Ukupno uzoraka:     {samples.Count}");
 
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"Uspesno poslato:    {successCount}");
+                Console.WriteLine($"Uspjesno poslato:    {successCount}");
                 Console.ResetColor();
 
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Neuspesno poslato:  {failCount}");
+                Console.WriteLine($"Neuspjesno poslato:  {failCount}");
                 Console.ResetColor();
 
                 Console.ForegroundColor = ConsoleColor.Cyan;

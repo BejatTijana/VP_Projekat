@@ -19,9 +19,7 @@ namespace Service
                 Console.WriteLine("==============================================");
                 Console.ResetColor();
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"Servis slusa na: net.tcp://localhost:4007/WeatherService");
-                Console.ResetColor();
+               
 
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine("Pritisnite Enter za gasenje servisa...");

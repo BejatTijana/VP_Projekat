@@ -87,7 +87,7 @@ namespace Client
             string header = reader.ReadLine();
 
             int rowNumber = 0;
-            int validCount = 0;
+            
 
             while (!reader.EndOfStream && rowNumber < maxRows)
             {
@@ -108,7 +108,7 @@ namespace Client
             }
 
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"Ucitano {validCount} validnih uzoraka od {rowNumber} redova.");
+            Console.WriteLine($"Ucitano {samples.Count} uzoraka od {rowNumber} redova.");
             Console.ResetColor();
             Console.WriteLine($"Log nevalidnih redova: {logPath}");
 
